@@ -19,6 +19,3 @@ class FeedForwardNetwork(nn.Module):
         l1 = self.linear1(x)
         relu = nn.ReLU(l1); 
         return self.linear2(relu); 
-
-
-
