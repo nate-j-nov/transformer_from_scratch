@@ -24,9 +24,9 @@ class EncoderModule(nn.Module):
   # compute a forward pass of an encoder module 
   def forward(self, x): 
     # each step of forward pass takes LayerNorm of a residual connection, followed by dropout
-    if self.mha(x).size != x.size:
-      raise InputError("Multihead attn output should be same size as input")
-    x = self.drop(self.layer_norm(x + self.mha(x,x,x))) # multihead attention with q=k=v
+    if self.mha(x,x,x)[0].size() != x.size():
+      raise ValueError("Multihead attn output should be same size as input")
+    x = self.drop(self.layer_norm(x + self.mha(x,x,x)[0])) # multihead attention with q=k=v
     x = self.drop(self.layer_norm(x + self.ff(x))) # feed-forward network
     return x
 #    x = self.drop(self.addnorm(x, self.mha(x))) # apply multihead attention 

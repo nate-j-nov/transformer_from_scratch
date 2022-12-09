@@ -3,6 +3,7 @@
 # Fall 2022
 
 import torch.nn as nn
+import torch.nn.functional as F
 
 class FeedForwardNetwork(nn.Module): 
     ''' 
@@ -17,5 +18,5 @@ class FeedForwardNetwork(nn.Module):
     
     def forward(self, x): 
         l1 = self.linear1(x)
-        relu = nn.ReLU(l1); 
+        relu = F.relu(l1); 
         return self.linear2(relu); 
