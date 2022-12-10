@@ -10,7 +10,10 @@ from AddAndNorm import AddAndNorm
 
 class EncoderModule(nn.Module): 
   '''
-  Add and norm
+  An Encoder "layer" from "Attention Is All You Need" by Vaswani et al. We are referring
+  to it as a "module" because Vaswani et al. use the term "layer" or "sub-layers".
+  Includes a multi-head attention sub-layer and feed-forward sub-layer, both of which
+  have LayerNorm and residual connections applied.
   '''
 
   def __init__(self):
@@ -29,6 +32,4 @@ class EncoderModule(nn.Module):
     x = self.drop(self.layer_norm(x + self.mha(x,x,x)[0])) # multihead attention with q=k=v
     x = self.drop(self.layer_norm(x + self.ff(x))) # feed-forward network
     return x
-#    x = self.drop(self.addnorm(x, self.mha(x))) # apply multihead attention 
-#    x = self.drop(self.addnorm(x, self.ff(x))) # apply feed-forward network
 
