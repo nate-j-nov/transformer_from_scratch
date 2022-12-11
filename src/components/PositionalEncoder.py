@@ -23,18 +23,18 @@ class PositionalEncoder(nn.Module):
     where i is in range [0, d_model-1]
   '''
 
-  def __init__(self, dimension, dropout=0.1):
+  def __init__(self, d_model, dropout=0.1):
     super(PositionalEncoder, self).__init__()
-    self.dimension = dimension
+    self.d_model = d_model 
     self.dropout = nn.Dropout(p=dropout)
 
   # compute a forward pass of the positional encoder
   def forward(self, x): 
     seq_len = x.size()[0]
     seq_dim = x.size()[1]
-    if seq_dim != self.dimension:
-      raise ValueError(f"Input dimension {seq_dim} does not match positional encoder dimension {self.dimension}") 
-    pe = np.arange(seq_len*self.dimension)*1.0
+    if seq_dim != self.d_model:
+      raise ValueError(f"Input dimension {seq_dim} does not match positional encoder dimension {self.d_model}") 
+    pe = np.arange(seq_len*self.d_model)*1.0
     pe = np.reshape(pe, [seq_len, seq_dim])
     pos_array = pe // seq_dim
     dim_array = pe % seq_dim

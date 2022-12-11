@@ -16,12 +16,12 @@ class EncoderModule(nn.Module):
   have LayerNorm and residual connections applied.
   '''
 
-  def __init__(self):
+  def __init__(self, d_model, num_heads, dropout=0.1):
     super(EncoderModule, self).__init__()
-    self.mha = nn.MultiheadAttention(512, 8) # multihead attention with 8 head
-    self.ff = FeedForwardNetwork() # feed forward network described in FeedForward.py
-    self.layer_norm = nn.LayerNorm(512) # layer norm with dimension d_model = 512
-    self.drop = nn.Dropout(p=0.1) # dropout layer with p=0.1 for regularization
+    self.mha = nn.MultiheadAttention(d_model, num_heads) # multihead attention 
+    self.ff = FeedForwardNetwork(d_model, 2048) # feed forward network described in FeedForward.py
+    self.layer_norm = nn.LayerNorm(d_model) # layer norm with dimension d_model = 512
+    self.drop = nn.Dropout(p=dropout) # dropout layer with p=0.1 for regularization
     # self.addnorm = AddAndNorm()
    
   # compute a forward pass of an encoder module 

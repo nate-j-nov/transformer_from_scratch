@@ -8,6 +8,7 @@
 
 import torch
 import torch.nn as nn
+from PositionalEncoder import PositionalEncoder
 from EncoderModule.py import EncoderModule
 from DecoderModule.py import DecoderModule
 
@@ -27,10 +28,11 @@ class Transformer_1(nn.Module):
     opposed to the N=6 used in the original Vaswani paper.
   '''
 
-    def __init__(self):
+    def __init__(self, d_model, vocab_size):
       super(Transformer_1, self).__init__()
-      self.embedding = ### write this
-      self.encoder = EncoderModule()
+      self.embedding = nn.Embedding(d_model, vocab_size)
+      self.encoder = EncoderModule(d_model, 8, 0.1) # encoder with 8-head MHA and dropout 0.1
+      self.decoder = 
 ### decoder module
 ### this is probably not right - how to pass encoder output to decoder init
 ###   when encoder hasn't been run yet? Empty tensor of proper size?A

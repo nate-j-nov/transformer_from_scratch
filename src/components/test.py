@@ -23,14 +23,14 @@ def main():
   print(f"Positionally encoded tensor: {x_pos_enc}")
 
   # encode x tensor of size 10,512
-  new_encoder = EncoderModule()
+  new_encoder = EncoderModule(512,8) # encoder with d_model 512, 8-head MHA, drop=0.1 by default
   x1 = new_encoder(x_pos_enc)
   print(f"Encoder output size: {x1.size()}")
   print(f"Encoder output: {x1}")
 
   # decode y tensor of size 12,512 with encoder module output x1
-  new_decoder = DecoderModule(x1)
-  y1 = new_decoder(y)
+  new_decoder = DecoderModule(512,8)
+  y1 = new_decoder(y, x1)
   print(f"Decoder output size: {y1.size()}")
   print(f"Decoder output: {y1}")
 
