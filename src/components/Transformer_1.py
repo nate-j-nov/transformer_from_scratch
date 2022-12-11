@@ -8,9 +8,10 @@
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from PositionalEncoder import PositionalEncoder
-from EncoderModule.py import EncoderModule
-from DecoderModule.py import DecoderModule
+from EncoderModule import EncoderModule
+from DecoderModule import DecoderModule
 
 ###
 # TODO: tie weights on input embedding and output embedding using following example
@@ -28,14 +29,32 @@ class Transformer_1(nn.Module):
     opposed to the N=6 used in the original Vaswani paper.
   '''
 
-    def __init__(self, d_model, vocab_size):
-      super(Transformer_1, self).__init__()
-      self.embedding = nn.Embedding(d_model, vocab_size)
-      self.encoder = EncoderModule(d_model, 8, 0.1) # encoder with 8-head MHA and dropout 0.1
-      self.decoder = 
-### decoder module
-### this is probably not right - how to pass encoder output to decoder init
-###   when encoder hasn't been run yet? Empty tensor of proper size?A
-### TODO: make size of model a parameter rather than hard-coded
-      self.encoder_out = torch.ones(2, 512)
-      self.decoder = DecoderModule(encoder_out)
+  def __init__(self, d_model, vocab_size, tie_weights=True):
+    super(Transformer_1, self).__init__()
+    self.embedding = nn.Embedding(vocab_size, d_model) # encoder and decoder input embeddings
+    self.pos_enc = PositionalEncoder(d_model, 0.1) # positional encoder with droppout 0.1
+    self.encoder = EncoderModule(d_model, 8, 0.1) # encoder with 8-head MHA and dropout 0.1
+    self.decoder = DecoderModule(d_model, 8, 0.1) # decoder with 8-head MHA and dropout 0.1
+    self.out_embed = nn.Linear(d_model, vocab_size) # linear layer predict next token
+
+    # weight tying example from PyTorch:
+    # https://github.com/pytorch/examples/blob/main/word_language_model/model.py
+    if tie_weights == True:
+      self.embedding.weight = self.out_embed.weight
+
+  def forward(self, x, y):
+    # process input sequence
+    inp = self.embedding(x) # embed tokenized sequence
+    inp = self.pos_enc(inp) # add positional encoding
+    inp = self.encoder(inp) # apply encoder module
+
+    # process output sequence
+    outp = self.embedding(y)
+    outp = self.pos_enc(outp)
+    outp = self.decoder(outp, inp)
+    
+    # final steps
+    p_token = self.out_embed(outp)
+#    p_token = F.softmax(self.out_embed(outp), dim=1)
+      
+
