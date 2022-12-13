@@ -54,7 +54,8 @@ class Transformer_1(nn.Module):
     outp = self.decoder(outp, inp)
     
     # final steps
-    p_token = self.out_embed(outp)
-#    p_token = F.softmax(self.out_embed(outp), dim=1)
+# TODO: figure out if the dim=1 in the softmax is correct
+    p_token = F.softmax(self.out_embed(outp), dim=1)
+    return p_token
       
 
