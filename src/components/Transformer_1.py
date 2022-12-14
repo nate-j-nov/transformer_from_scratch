@@ -16,6 +16,7 @@ from DecoderModule import DecoderModule
 ###
 # TODO: tie weights on input embedding and output embedding using following example
 # https://github.com/pytorch/examples/blob/main/word_language_model/model.py#L28
+# TODO: embedding layers needs to be multiplied by sqrt(d_model)
 ###
 
 
@@ -29,15 +30,16 @@ class Transformer_1(nn.Module):
     opposed to the N=6 used in the original Vaswani paper.
   '''
 
-  def __init__(self, d_model, vocab_size, tie_weights=True):
+  def __init__(self, d_model, src_vocab_size, tgt_vocab_size, tie_weights=False):
     super(Transformer_1, self).__init__()
-    self.embedding = nn.Embedding(vocab_size, d_model) # encoder and decoder input embeddings
+    self.embedding = nn.Embedding(src_vocab_size, d_model) # encoder and decoder input embeddings
     self.pos_enc = PositionalEncoder(d_model, 0.1) # positional encoder with droppout 0.1
     self.encoder = EncoderModule(d_model, 8, 0.1) # encoder with 8-head MHA and dropout 0.1
     self.decoder = DecoderModule(d_model, 8, 0.1) # decoder with 8-head MHA and dropout 0.1
-    self.out_embed = nn.Linear(d_model, vocab_size) # linear layer predict next token
+    self.out_embed = nn.Linear(d_model, tgt_vocab_size) # linear layer predict next token
 
     # weight tying example from PyTorch:
+    # NOTE: src_vocab_size must equal tgt_vocab_size if tie_weights is true
     # https://github.com/pytorch/examples/blob/main/word_language_model/model.py
     if tie_weights == True:
       self.embedding.weight = self.out_embed.weight
@@ -54,7 +56,8 @@ class Transformer_1(nn.Module):
     outp = self.decoder(outp, inp)
     
     # final steps
-    p_token = self.out_embed(outp)
-#    p_token = F.softmax(self.out_embed(outp), dim=1)
+# TODO: figure out if the dim=1 in the softmax is correct
+    p_token = F.softmax(self.out_embed(outp), dim=1)
+    return p_token
       
 
