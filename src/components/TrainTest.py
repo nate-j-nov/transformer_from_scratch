@@ -106,6 +106,8 @@ def train_model( model, optimizer, train_loader, train_losses, train_counter,
     model.train()
     # data - English sentence, German sentence, mask:
     for batch_idx, (src, tgt) in enumerate(train_loader):
+        if batch_idx > 20:
+          break;
         optimizer.zero_grad()
         output = model(src, tgt)
         loss = criterion(output, tgt)
