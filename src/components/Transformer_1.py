@@ -16,6 +16,7 @@ from DecoderModule import DecoderModule
 ###
 # TODO: tie weights on input embedding and output embedding using following example
 # https://github.com/pytorch/examples/blob/main/word_language_model/model.py#L28
+# TODO: embedding layers needs to be multiplied by sqrt(d_model)
 ###
 
 

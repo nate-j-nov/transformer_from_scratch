@@ -16,6 +16,7 @@ def main():
   model = Transformer_1(512, 100)
   
   out_seq = model(x,y)
+  print(f"out_seq size: {out_seq.shape}")
   print(f"out_seq: {out_seq}")
 
 
