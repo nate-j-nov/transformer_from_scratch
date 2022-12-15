@@ -8,11 +8,8 @@
 # following torchtext tutorial at 
 # https://pytorch.org/tutorials/beginner/text_sentiment_ngrams_tutorial.html
 
-
 # import statements
 import sys
-import math
-import os
 
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
@@ -105,6 +102,49 @@ def collate_batch(batch, de_pipeline, en_pipeline, max_padding=128, pad_id=2):
     de_list = torch.cat(de_list) 
     en_list = torch.cat(en_list)
     return de_list.to(device), en_list.to(device)
+
+def translate(model, src, max_len, de_vocab, en_vocab, de_pipeline):
+    '''
+    Function to generate a translated english sentence from a German source string 
+    '''
+    model.eval()
+    # create output tensor, seeded with 0
+    # NOTE: I think this can just be zeros
+    tgt_tokens = [en_vocab.get_stoi()['<s>']]
+    #tgt_tokens = torch.zeros(1, dtype=torch.int64).fill_(en_vocab.get_stoi()['<s>'])
+    print(f"Translated tokens: {tgt_tokens}")
+    
+    # tokenize and add begin/end of sequence tokens to src
+    src_bos = torch.zeros(1).fill_(de_vocab.get_stoi()['<s>'])
+    src_eos = torch.zeros(1).fill_(de_vocab.get_stoi()['</s>'])
+    src_token = torch.cat([src_bos.type(dtype=torch.int64),
+                            torch.tensor(de_pipeline(src),dtype=torch.int64),
+                            src_eos.type(dtype=torch.int64)
+                          ])
+    print(f"src token: {src_token}")
+    print(f"src token shape: {src_token.shape}")
+    
+    # encode src using model, store as memory
+    with torch.no_grad():
+        src_enc = model.encode(src_token)
+        print(f"Encoded src shape: {src_enc.shape}")
+        
+    # loop up to max_len, generate tokens with decoder
+    for i in range(max_len):
+        tgt_tensor = torch.LongTensor(tgt_tokens)
+        #tgt_mask = 
+        with torch.no_grad():
+            p_toks = model.decode(src_enc, tgt_tensor)
+            print(f"decoded token probabilities shape: {p_toks.shape}")
+            print(f"decoded token probabilities: {p_toks}")  
+            print(f"decoded token last row: {p_toks[-1,:]}")              
+        pred = p_toks.argmax(dim=1)[-1]
+        print(f"pred: {pred}")
+        tgt_tokens.append(int(pred))
+        if en_vocab.get_itos()[pred.item()] == en_vocab.get_stoi()['</s>']:
+            break
+        print(f"target seq: {tgt_tokens}")
+
 
 def train_model( model, optimizer, train_loader, train_losses, train_counter, 
         epoch, log_interval, criterion ):
@@ -219,6 +259,8 @@ def main(argv):
 
         # Evaluate model
         eval_model( network, valid_loader, test_losses )
+
+       
 
 if __name__ == "__main__":
     main(sys.argv)

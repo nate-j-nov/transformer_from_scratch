@@ -62,3 +62,27 @@ class Transformer_1(nn.Module):
     # final steps
     p_token = F.softmax(self.out_embed(outp), dim=1)
     return p_token
+
+  def encode(self, x):
+    '''
+    Function to run encoder layer of model and yields continuous representation of source sequence
+    Parameters: 
+        x: Tokenized input sequence
+    '''
+    inp = self.embedding(x)
+    inp = self.pos_enc(inp)
+    inp = self.encoder(inp)
+    return inp
+    
+  def decode(self, memory, seed):
+    '''
+    Function to run decoder layer of model and yield predicted probability of next token
+    Parameters: 
+        memory: Continuous representation of source sequence
+        seed: tokenized partial output sequence 
+    '''
+    outp = self.embedding(seed)
+    outp = self.pos_enc(outp)
+    outp = self.decoder(outp, memory)
+    p_token = F.softmax(self.out_embed(outp), dim=1) 
+    return p_token
