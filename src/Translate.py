@@ -136,7 +136,7 @@ def main(argv):
 
     # initialize the network and the optimizer
     network = Transformer_1(512, len(de_vocab), len(en_vocab))
-    network.load_state_dict(torch.load('./results/model_2149.pth'))
+    network.load_state_dict(torch.load('./results/model.pth'))
 
     translate(network, "ich bein ein berliner", 64, de_vocab, en_vocab, de_pipeline)
 
