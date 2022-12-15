@@ -15,6 +15,8 @@ Python version: Python 3.9
 From directory 'cs7180_finalproject':
   $ mkdir results
   $ python src/TrainTest.py 
+      - This should throw errors based on your Python installation and packages
+        telling you what you don't have installed
       - calls training for the Transformer model 
       - unbatched, likely very slow
       - produces 'cs7180_finalproject/results/model.pth' when complete
